@@ -10,7 +10,7 @@ const connectToDatabase = () => {
       console.log('connected to MongoDB');
     })
     .catch((error) => {
-      console.log('error connecting to MongoDB:', error.message);
+      console.log('Error connecting to MongoDB:', error.message);
     });
 };
 

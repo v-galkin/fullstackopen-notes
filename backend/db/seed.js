@@ -26,15 +26,17 @@ const initialNotes = [
 ]
 
 const seedDatabase = async () => {
-    await connectToDatabase()
-
-    await Note.deleteMany({})
-    console.log('Removed existing notes from the database')
-
-    await Note.insertMany(initialNotes)
-    console.log('Inserted initial notes into the database')
-
-    mongoose.connection.close()
+    try {
+        await connectToDatabase()
+        await Note.deleteMany({})
+        console.log('Removed existing notes from the database')
+        await Note.insertMany(initialNotes)
+        console.log('Database seeded successfully')
+    } catch (error) {
+        console.error('Error seeding database:', error.message)
+    } finally {
+        await mongoose.connection.close()
+    }
 }
 
 seedDatabase();

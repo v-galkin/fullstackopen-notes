@@ -1,35 +1,8 @@
 const notesRouter = require('express').Router();
 const Note = require('../models/note');
 
-// Get all notes
-notesRouter.get('/', (request, response) => {
-  Note.find({}).then((notes) => {
-    response.json(notes);
-  });
-});
-
-// Get a note by id
-notesRouter.get('/:id', (request, response) => {
-  const id = request.params.id;
-  Note.findById(id).then((note) => {
-    if (note) {
-      response.json(note);
-    } else {
-      response.status(404).end();
-    }
-  });
-});
-
-// Delete a note by id
-notesRouter.delete('/:id', (request, response) => {
-  const id = request.params.id;
-  Note.findByIdAndDelete(id).then((result) => {
-    response.status(204).end();
-  })
-});
-
 // Create a new note
-notesRouter.post('/', (request, response) => {
+notesRouter.post('/', (request, response, next) => {
   const body = request.body;
 
   if (!body.content) {
@@ -43,9 +16,62 @@ notesRouter.post('/', (request, response) => {
     important: body.important || false,
   });
 
-  note.save().then((savedNote) => {
-    response.json(savedNote);
+  note.save()
+    .then((savedNote) => {
+      response.json(savedNote);
+    })
+    .catch((error) => next(error));
+});
+
+// Get all notes
+notesRouter.get('/', (request, response) => {
+  Note.find({}).then((notes) => {
+    response.json(notes);
+  });
+});
+
+// Get a note by id
+notesRouter.get('/:id', (request, response, next) => {
+  const id = request.params.id;
+  Note.findById(id)
+    .then((note) => {
+      if (note) {
+        response.json(note);
+      } else {
+        response.status(404).end();
+      }
+    })
+    .catch((error) => {next(error)});
+});
+
+// Update a note by id
+notesRouter.put('/:id', (request, response, next) => {
+  const id = request.params.id;
+  const { content, important } = request.body;
+
+  Note.findByIdAndUpdate(id).then((note) => {
+    if (!note) {
+      return response.status(404).end()
+    }
+
+    note.content = content;
+    note.important = important;
+
+    return note.save().then((updatedNote) => {
+      response.json(updatedNote);
+    })
   })
+  .catch((error) => next(error));
+})
+
+// Delete a note by id
+notesRouter.delete('/:id', (request, response, next) => {
+  const id = request.params.id;
+  Note.findByIdAndDelete(id)
+    .then((result) => {
+      response.status(204).end();
+    })
+    .catch((error) => next(error));
 });
 
 module.exports = notesRouter;
