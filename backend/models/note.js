@@ -1,12 +1,12 @@
 const mongoos = require('mongoose')
 
 const noteSchema = new mongoos.Schema({
-    content: String,
-    date: {
-        type: Date,
-        default: Date.now
-    },
-    important: Boolean,
+  content: String,
+  date: {
+    type: Date,
+    default: Date.now
+  },
+  important: Boolean,
 })
 
 noteSchema.set('toJSON', {
@@ -17,6 +17,6 @@ noteSchema.set('toJSON', {
   }
 })
 
-const Note = mongoos.model('Note', noteSchema)  
+const Note = mongoos.model('Note', noteSchema)
 
-module.exports = Note;
+module.exports = Note
